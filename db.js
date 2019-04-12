@@ -22,20 +22,6 @@ const Article_schema = new mongoose.Schema({
 })
 // statics 相当于 prototype
 Article_schema.statics = {
-    // find+limit方案 不适用
-    failfetch(id, pageNum = 5, cb) {
-        if (id) {
-                return this.find({'_id': {'$lt': id}})
-                    .limit(pageNum)
-                    .sort({'_id': -1})
-                    .exec(cb)
-        } else { // 首次取数据
-            return this.find({})
-                .limit(pageNum)
-                .sort({'_id': -1})
-                .exec(cb)
-        }
-    },
     fetch(page, pageNum = 5) {
         return this.find({})
             .skip(page * pageNum)
@@ -50,18 +36,5 @@ Article_schema.statics = {
  */
 mongoose.model('Article', Article_schema);
 const Article = mongoose.model('Article');
-
-function find(obj) {
-    return new Promise((resolve, reject) => {
-        Article.find(obj, async function (err, doc) {
-            if (err) {
-                reject(err)
-                return;
-            } else {
-                resolve(doc)
-            }
-        })
-    })
-}
 
 module.exports = Article

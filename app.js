@@ -54,18 +54,6 @@ router.get('/blogDetail', async (ctx, next) => {
     }
     ctx.response.body = res;
 })
-// 获取文章列表 -- skip+limit 分页
-// router.get('/blogDetailSkip', async (ctx, next) => {
-//     const data = await Article.skipFetch(Number(ctx.query.page));
-//     const count = await Article.countDocuments();
-//     const res = {
-//         code: 200,
-//         data: data,
-//         count: count
-//     }
-//     ctx.response.body = res;
-// })
-
 
 
 /**
