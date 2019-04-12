@@ -41,7 +41,8 @@ const router = new Router();
 // 获取指定文章
 router.get('/blogDetail/:id', async (ctx, next) => {
     const id = ctx.params.id;
-    ctx.response.body = mdRender(await readMd(id));
+    const data = await Article.fetchFileName(id);
+    ctx.response.body = mdRender(await readMd(data[0]._doc.fileName));
 })
 // 获取文章列表 -- find+limit 分页
 router.get('/blogDetail', async (ctx, next) => {

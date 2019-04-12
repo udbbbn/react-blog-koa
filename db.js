@@ -22,14 +22,20 @@ const Article_schema = new mongoose.Schema({
 })
 // statics 相当于 prototype
 Article_schema.statics = {
+    // get博文列表-分页
     fetchList(page, pageNum = 5) {
         return this.find({})
             .skip(page * pageNum)
             .limit(pageNum)
             .sort({'_id': -1})
     },
+    // 获取所有博文
     fetchAll() {
         return this.find({})
+    },
+    // 获取文件名
+    fetchFileName(id) {
+        return this.find({'_id': id}, {'fileName': 1})
     }
 }
 /**
