@@ -74,7 +74,8 @@ function calcCalssNum(arr) {
         if (!obj[el._doc.class]) {
             obj[el._doc.class] = {
                 count: 1,
-                children: []
+                children: [],
+                target: el._doc.class
             }
             obj[el._doc.class].children.push(el._doc)
         } else {
