@@ -45,7 +45,7 @@ router.get('/blogDetail/:id', async (ctx, next) => {
 })
 // 获取文章列表 -- find+limit 分页
 router.get('/blogDetail', async (ctx, next) => {
-    const data = await Article.fetch(Number(ctx.query.page), Number(ctx.query.pageSize));
+    const data = await Article.fetchList(Number(ctx.query.page), Number(ctx.query.pageSize));
     const count = await Article.countDocuments();
     const res = {
         code: 200,
@@ -54,7 +54,36 @@ router.get('/blogDetail', async (ctx, next) => {
     }
     ctx.response.body = res;
 })
+// 获取文章分类
+router.get('/class', async(ctx, next) => {
+    let data = await Article.fetchAll();
+    const count = await Article.countDocuments();
+    data = calcCalssNum(data);
+    const res = {
+        code: 200,
+        data: data,
+        count: count
+    }
+    ctx.response.body = res;
+})
 
+// 计算分类的数量
+function calcCalssNum(arr) {
+    let obj = {};
+    arr.map(el => {
+        if (!obj[el._doc.class]) {
+            obj[el._doc.class] = {
+                count: 1,
+                children: []
+            }
+            obj[el._doc.class].children.push(el._doc)
+        } else {
+            ++obj[el._doc.class].count
+            obj[el._doc.class].children.push(el._doc)
+        }
+    });
+    return obj
+}
 
 /**
  * 
@@ -72,12 +101,12 @@ async function readMd(id) {
  * @param {string} file makedown文件内容
  */
 function handleKey(file) {
-    const reg = /(?:title:|descrption:|date:)(.*)/g;
+    const reg = /(?:title:|descrption:|date:|class:)(.*)/g;
     const resArr = file.match(reg);
     let sqlObj = {};
     resArr.map(el => {
-        let temp = el.split(': ');
-        sqlObj[temp[0]] = temp[1]
+        const temp = el.split(': ');
+        sqlObj[temp[0]] = temp[1];
     });
     console.log(JSON.stringify(sqlObj))
 }

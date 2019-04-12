@@ -22,11 +22,14 @@ const Article_schema = new mongoose.Schema({
 })
 // statics 相当于 prototype
 Article_schema.statics = {
-    fetch(page, pageNum = 5) {
+    fetchList(page, pageNum = 5) {
         return this.find({})
             .skip(page * pageNum)
             .limit(pageNum)
             .sort({'_id': -1})
+    },
+    fetchAll() {
+        return this.find({})
     }
 }
 /**
