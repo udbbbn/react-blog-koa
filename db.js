@@ -18,7 +18,9 @@ db.once('open',function(){
 const Article_schema = new mongoose.Schema({
     title: String,
     description: String,
-    date: String
+    date: String,
+    class: String,
+    fileName: String
 })
 // statics 相当于 prototype
 Article_schema.statics = {
@@ -36,6 +38,33 @@ Article_schema.statics = {
     // 获取文件名
     fetchFileName(id) {
         return this.find({'_id': id}, {'fileName': 1})
+    },
+    // 搜索 title description class 
+    search(page, pageNum = 5, keyword) {
+        const reg = new RegExp(keyword);
+        return this.find({})
+            .or([{
+                'title': { $regex: reg}
+            }, {
+                'description': { $regex: reg}
+            }, {
+                'class': { $regex: reg}
+            }])
+            .skip(page * pageNum)
+            .limit(pageNum)
+            .sort({'_id': -1})
+    },
+    // 返回搜索结果长度-用于分页
+    searchLength(keyword) {
+        const reg = new RegExp(keyword);
+        return this.find({})
+            .or([{
+                'title': { $regex: reg}
+            }, {
+                'description': { $regex: reg}
+            }, {
+                'class': { $regex: reg}
+            }]).countDocuments();
     }
 }
 /**
