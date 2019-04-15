@@ -42,14 +42,19 @@ const router = new Router();
 router.get('/blogDetail/:id', async (ctx, next) => {
     const id = ctx.params.id;
     const data = await Article.fetchFileName(id);
-    ctx.response.body = mdRender(await readMd(data[0]._doc.fileName));
+    const mdData = await readMd(data[0]._doc.fileName);
+    const res = {
+        code: mdData ? 200 : 404,
+        data: mdData ? mdRender(mdData) : ''
+    }
+    ctx.response.body = res;
 })
 // 获取文章列表 -- find+limit 分页
 router.get('/blogDetail', async (ctx, next) => {
     const data = await Article.fetchList(Number(ctx.query.page), Number(ctx.query.pageSize));
     const count = await Article.countDocuments();
     const res = {
-        code: 200,
+        code: data.length ? 200 : 404,
         data: data,
         count: count
     }
@@ -61,7 +66,17 @@ router.get('/class', async(ctx, next) => {
     const count = await Article.countDocuments();
     data = calcCalssNum(data);
     const res = {
-        code: 200,
+        code: data.length ? 200 : 404,
+        data: data,
+        count: count
+    }
+    ctx.response.body = res;
+})
+router.get('/search', async(ctx, next) => {
+    const data = await Article.search(Number(ctx.query.page), Number(ctx.query.pageSize), ctx.query.keyword);
+    const count = await Article.searchLength(ctx.query.keyword);
+    const res = {
+        code: data.length ? 200 : 404,
         data: data,
         count: count
     }
@@ -92,9 +107,18 @@ function calcCalssNum(arr) {
  * @param {string} id 文件名(id)
  */
 async function readMd(id) {
-    const file = await readFile(`./md/${id}.md`);
-    handleKey(file.toString())
-    const res = file.toString().split('-----')[1]
+    let res;
+    try {
+        const file = await readFile(`./md/${id}.md`);
+        handleKey(file.toString())
+        res = file.toString().split('-----')[1]
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            res = '';
+        } else {
+            throw new Error(error)
+        }
+    }
     return res;
 }
 
