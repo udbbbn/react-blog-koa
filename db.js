@@ -20,7 +20,8 @@ const Article_schema = new mongoose.Schema({
     description: String,
     date: String,
     class: String,
-    fileName: String
+    fileName: String,
+    img: String
 })
 // statics 相当于 prototype
 Article_schema.statics = {

@@ -146,7 +146,7 @@ async function readMd(id) {
  * @param {string} file makedown文件内容
  */
 function handleKey(file) {
-    const reg = /(?:title:|description:|date:|class:)(.*)/g;
+    const reg = /(?:title:|description:|date:|class:|img:)(.*)/g;
     const resArr = file.match(reg);
     let sqlObj = {};
     resArr && resArr.map(el => {
