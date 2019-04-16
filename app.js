@@ -32,8 +32,28 @@ chokidar.watch('./md', {
     // 经测试 只是启动服务时的首次文件遍历 是否发送事件
     usePolling: false, // 是否使用fs.watchFile 轮询
     // depth: number 递归监听number个子目录
-}).on('all', (event, path) => { // 监听除了ready, raw, and error之外所有的事件类型
+}).on('all', async (event, path) => { // 监听除了ready, raw, and error之外所有的事件类型
     console.log(event, path);
+    // 处理md文件
+    const fileName = path.match(/\\(.*).md/);
+    if (fileName && fileName[1]) {
+        let file;
+        let res;
+        if (event !== "unlink") {
+            file = await readFile(`./md/${fileName[1]}.md`);
+            res = handleKey(file.toString());
+            console.log(res)
+        };
+        if (event === "add") {
+            Article.createData({...res, fileName: fileName[1]});
+        }
+        if (event === 'change') {
+            Article.updateData({fileName: fileName[1]}, res);
+        }
+        if (event === 'unlink') {
+            Article.deleteData({fileName: fileName[1]});
+        }
+    }
 })
 
 
@@ -110,7 +130,6 @@ async function readMd(id) {
     let res;
     try {
         const file = await readFile(`./md/${id}.md`);
-        handleKey(file.toString())
         res = file.toString().split('-----')[1]
     } catch (error) {
         if (error.code === "ENOENT") {
@@ -127,14 +146,14 @@ async function readMd(id) {
  * @param {string} file makedown文件内容
  */
 function handleKey(file) {
-    const reg = /(?:title:|descrption:|date:|class:)(.*)/g;
+    const reg = /(?:title:|description:|date:|class:)(.*)/g;
     const resArr = file.match(reg);
     let sqlObj = {};
-    resArr.map(el => {
+    resArr && resArr.map(el => {
         const temp = el.split(': ');
         sqlObj[temp[0]] = temp[1];
     });
-    console.log(JSON.stringify(sqlObj))
+    return sqlObj
 }
 
 /**
