@@ -65,6 +65,16 @@ Article_schema.statics = {
             }, {
                 'class': { $regex: reg}
             }]).countDocuments();
+    },
+    // 以下三个操作 不加回调执行不了 不知道为啥
+    createData(data) {
+        return this.create(data, (err, res) => {})
+    },
+    updateData(condition, data) {
+        return this.updateOne(condition, { "$set": data}, (err, res) => {})
+    },
+    deleteData(condition) {
+        return this.deleteOne(condition, (err, res) => {})
     }
 }
 /**
