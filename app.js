@@ -35,7 +35,7 @@ chokidar.watch('./md', {
 }).on('all', async (event, path) => { // 监听除了ready, raw, and error之外所有的事件类型
     console.log(event, path);
     // 处理md文件
-    const fileName = path.match(/\\(.*).md/);
+    const fileName = path.match(/\/(.*).md/);
     if (fileName && fileName[1]) {
         let file;
         let res;

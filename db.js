@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on('error', function(err){
-    console.error("connection error;", error);
+    console.error("connection error;", err);
 });
 db.once('open',function(){
   //一次打开记录
