@@ -92,6 +92,7 @@ router.get('/class', async(ctx, next) => {
     }
     ctx.response.body = res;
 })
+// 搜索
 router.get('/search', async(ctx, next) => {
     const data = await Article.search(Number(ctx.query.page), Number(ctx.query.pageSize), ctx.query.keyword);
     const count = await Article.searchLength(ctx.query.keyword);
@@ -101,6 +102,15 @@ router.get('/search', async(ctx, next) => {
         count: count
     }
     ctx.response.body = res;
+})
+// get图片
+router.get('/image/:img', async(ctx, next) => {
+    const img = ctx.params.img;
+    const ext = img.split('.')[1];
+    // 具体路径需调整
+    const imgFile = await readFile(`./md/images/${img}`);
+    ctx.response.type = ext;
+    ctx.response.body = imgFile;
 })
 
 // 计算分类的数量
