@@ -104,7 +104,7 @@ router.get('/search', async(ctx, next) => {
     ctx.response.body = res;
 })
 // get图片
-router.get('/image/:img', async(ctx, next) => {
+router.get('/images/:img', async(ctx, next) => {
     const img = ctx.params.img;
     const ext = img.split('.')[1];
     // 具体路径需调整
